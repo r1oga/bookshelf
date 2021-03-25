@@ -1,9 +1,56 @@
 // 🐨 you'll need to import React and ReactDOM up here
+import '@reach/dialog/styles.css'
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
+import { Dialog } from '@reach/dialog'
+import { VisuallyHidden } from '@reach/visually-hidden'
 
-// 🐨 you'll also need to import the Logo component from './components/logo'
+import { Logo, LoginForm } from 'components'
 
-// 🐨 create an App component here and render the logo, the title ("Bookshelf"), a login button, and a register button.
-// 🐨 for fun, you can add event handlers for both buttons to alert that the button was clicked
+const modals = {
+  register: 'register',
+  login: 'login',
+  none: 'none'
+}
+const App = () => {
+  const [openModal, setOpenModal] = useState(modals.none)
+  const close = () => setOpenModal('none')
 
-// 🐨 use ReactDOM to render the <App /> to the root element
-// 💰 find the root element with: document.getElementById('root')
+  const login = formData => console.log('login', formData)
+  const register = formData => console.log('register', formData)
+  return (
+    <>
+      <Logo />
+      <h1>Bookshelf</h1>
+
+      <button onClick={() => setOpenModal(modals.login)}>Login</button>
+      <button onClick={() => setOpenModal(modals.register)}>Register</button>
+      <Dialog
+        isOpen={openModal === 'login'}
+        onDismiss={close}
+        aria-label="Login form">
+        <h3>Login</h3>
+        <button className="close-button" onClick={close}>
+          <VisuallyHidden>Close</VisuallyHidden>
+          <span aria-hidden>×</span>
+        </button>
+
+        <LoginForm onSubmit={login} />
+      </Dialog>
+
+      <Dialog
+        isOpen={openModal === 'register'}
+        onDismiss={close}
+        aria-label="Registration form">
+        <h3>Register</h3>
+        <button className="close-button" onClick={close}>
+          <VisuallyHidden>Close</VisuallyHidden>
+          <span aria-hidden>×</span>
+        </button>
+        <LoginForm onSubmit={register} />
+      </Dialog>
+    </>
+  )
+}
+
+ReactDOM.render(<App />, document.getElementById('root'))
