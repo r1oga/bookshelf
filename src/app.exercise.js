@@ -1,25 +1,22 @@
 /** @jsx jsx */
-import {jsx} from '@emotion/core'
+import { jsx } from '@emotion/core'
 
 import * as React from 'react'
 import * as auth from 'auth-provider'
-// React Router DOM exposes a context provider that all the React Router
-// components use to implicitly access the router data. We need to wrap our
-// AuthenticatedApp in the router
-// 🐨 import the BrowserRouter from 'react-router-dom'
-import {FullPageSpinner} from './components/lib'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { FullPageSpinner } from './components/lib'
 import * as colors from './styles/colors'
-import {client} from './utils/api-client'
-import {useAsync} from './utils/hooks'
-import {AuthenticatedApp} from './authenticated-app'
-import {UnauthenticatedApp} from './unauthenticated-app'
+import { client } from './utils/api-client'
+import { useAsync } from './utils/hooks'
+import { AuthenticatedApp } from './authenticated-app'
+import { UnauthenticatedApp } from './unauthenticated-app'
 
 async function getUser() {
   let user = null
 
   const token = await auth.getToken()
   if (token) {
-    const data = await client('me', {token})
+    const data = await client('me', { token })
     user = data.user
   }
 
@@ -35,7 +32,7 @@ function App() {
     isError,
     isSuccess,
     run,
-    setData,
+    setData
   } = useAsync()
 
   React.useEffect(() => {
@@ -62,9 +59,8 @@ function App() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
+          alignItems: 'center'
+        }}>
         <p>Uh oh... There's a problem. Try refreshing the app.</p>
         <pre>{error.message}</pre>
       </div>
@@ -72,14 +68,15 @@ function App() {
   }
 
   if (isSuccess) {
-    const props = {user, login, register, logout}
-    // 🐨 wrap the BrowserRouter around the AuthenticatedApp
+    const props = { user, login, register, logout }
     return user ? (
-      <AuthenticatedApp {...props} />
+      <Router>
+        <AuthenticatedApp {...props} />
+      </Router>
     ) : (
       <UnauthenticatedApp {...props} />
     )
   }
 }
 
-export {App}
+export { App }
