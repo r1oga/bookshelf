@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core'
 
 import React from 'react'
-import { Route, Link, Routes } from 'react-router-dom'
+import { Route, Link, Routes, useMatch } from 'react-router-dom'
 import { Button } from './components/lib'
 import * as mq from './styles/media-queries'
 import * as colors from './styles/colors'
@@ -50,26 +50,38 @@ const AuthenticatedApp = ({ user, logout }) => (
   </>
 )
 
-const NavLink = props => (
-  <Link
-    css={{
-      display: 'block',
-      padding: '8px 15px 8px 10px',
-      margin: '5px 0',
-      width: '100%',
-      height: '100%',
-      color: colors.text,
-      borderRadius: '2px',
-      borderLeft: '5px solid transparent',
-      ':hover': {
-        color: colors.indigo,
-        textDecoration: 'none',
-        background: colors.gray10
-      }
-    }}
-    {...props}
-  />
-)
+const NavLink = props => {
+  const matches = useMatch(props.to)
+  return (
+    <Link
+      css={[
+        {
+          display: 'block',
+          padding: '8px 15px 8px 10px',
+          margin: '5px 0',
+          width: '100%',
+          height: '100%',
+          color: colors.text,
+          borderRadius: '2px',
+          borderLeft: '5px solid transparent',
+          ':hover': {
+            color: colors.indigo,
+            textDecoration: 'none',
+            background: colors.gray10
+          }
+        },
+        matches && {
+          borderLeft: `5px solid ${colors.indigo}`,
+          background: colors.gray10,
+          ':hover': {
+            background: colors.gray20
+          }
+        }
+      ]}
+      {...props}
+    />
+  )
+}
 
 function Nav() {
   return (
