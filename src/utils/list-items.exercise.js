@@ -1,11 +1,11 @@
-import { useQuery, useMutation, queryCache } from 'react-query'
-import { client } from './api-client'
+import {useQuery, useMutation, queryCache} from 'react-query'
+import {client} from './api-client'
 
 function useListItems(user) {
-  const { data: listItems } = useQuery({
+  const {data: listItems} = useQuery({
     queryKey: 'list-items',
     queryFn: () =>
-      client(`list-items`, { token: user.token }).then(data => data.listItems)
+      client(`list-items`, {token: user.token}).then(data => data.listItems),
   })
   return listItems ?? []
 }
@@ -16,7 +16,7 @@ function useListItem(user, bookId) {
 }
 
 const defaultMutationOptions = {
-  onSettled: () => queryCache.invalidateQueries('list-items')
+  onSettled: () => queryCache.invalidateQueries('list-items'),
 }
 
 function useUpdateListItem(user, options) {
@@ -25,25 +25,23 @@ function useUpdateListItem(user, options) {
       client(`list-items/${updates.id}`, {
         method: 'PUT',
         data: updates,
-        token: user.token
+        token: user.token,
       }),
-    { ...defaultMutationOptions, ...options }
+    {...defaultMutationOptions, ...options},
   )
 }
 
 function useRemoveListItem(user, options) {
   return useMutation(
-    ({ id }) =>
-      client(`list-items/${id}`, { method: 'DELETE', token: user.token }),
-    { ...defaultMutationOptions, ...options }
+    ({id}) => client(`list-items/${id}`, {method: 'DELETE', token: user.token}),
+    {...defaultMutationOptions, ...options},
   )
 }
 
 function useCreateListItem(user, options) {
   return useMutation(
-    ({ bookId }) =>
-      client(`list-items`, { data: { bookId }, token: user.token }),
-    { ...defaultMutationOptions, ...options }
+    ({bookId}) => client(`list-items`, {data: {bookId}, token: user.token}),
+    {...defaultMutationOptions, ...options},
   )
 }
 
@@ -52,5 +50,5 @@ export {
   useListItems,
   useUpdateListItem,
   useRemoveListItem,
-  useCreateListItem
+  useCreateListItem,
 }
