@@ -1,26 +1,26 @@
 /** @jsx jsx */
-import {jsx} from '@emotion/core'
+import { jsx } from '@emotion/core'
 
 import * as React from 'react'
 import debounceFn from 'debounce-fn'
-import {FaRegCalendarAlt} from 'react-icons/fa'
+import { FaRegCalendarAlt } from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
-import {useParams} from 'react-router-dom'
-import {useBook} from 'utils/books'
-import {useListItem, useUpdateListItem} from 'utils/list-items'
-import {formatDate} from 'utils/misc'
+import { useParams } from 'react-router-dom'
+import { useBook } from 'utils/books'
+import { useListItem, useUpdateListItem } from 'utils/list-items'
+import { formatDate } from 'utils/misc'
 import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
-import {Textarea} from 'components/lib'
-import {Rating} from 'components/rating'
-import {StatusButtons} from 'components/status-buttons'
+import { Textarea, ErrorMessage } from 'components/lib'
+import { Rating } from 'components/rating'
+import { StatusButtons } from 'components/status-buttons'
 
-function BookScreen({user}) {
-  const {bookId} = useParams()
+function BookScreen({ user }) {
+  const { bookId } = useParams()
   const book = useBook(bookId, user)
   const listItem = useListItem(user, bookId)
 
-  const {title, author, coverImageUrl, publisher, synopsis} = book
+  const { title, author, coverImageUrl, publisher, synopsis } = book
 
   return (
     <div>
@@ -32,22 +32,21 @@ function BookScreen({user}) {
           marginBottom: '1em',
           [mq.small]: {
             display: 'flex',
-            flexDirection: 'column',
-          },
-        }}
-      >
+            flexDirection: 'column'
+          }
+        }}>
         <img
           src={coverImageUrl}
           alt={`${title} book cover`}
-          css={{width: '100%', maxWidth: '14rem'}}
+          css={{ width: '100%', maxWidth: '14rem' }}
         />
         <div>
-          <div css={{display: 'flex', position: 'relative'}}>
-            <div css={{flex: 1, justifyContent: 'space-between'}}>
+          <div css={{ display: 'flex', position: 'relative' }}>
+            <div css={{ flex: 1, justifyContent: 'space-between' }}>
               <h1>{title}</h1>
               <div>
                 <i>{author}</i>
-                <span css={{marginRight: 6, marginLeft: 6}}>|</span>
+                <span css={{ marginRight: 6, marginLeft: 6 }}>|</span>
                 <i>{publisher}</i>
               </div>
             </div>
@@ -58,15 +57,14 @@ function BookScreen({user}) {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-around',
-                minHeight: 100,
-              }}
-            >
+                minHeight: 100
+              }}>
               {book.loadingBook ? null : (
                 <StatusButtons user={user} book={book} />
               )}
             </div>
           </div>
-          <div css={{marginTop: 10, height: 46}}>
+          <div css={{ marginTop: 10, height: 46 }}>
             {listItem?.finishDate ? (
               <Rating user={user} listItem={listItem} />
             ) : null}
@@ -83,15 +81,15 @@ function BookScreen({user}) {
   )
 }
 
-function ListItemTimeframe({listItem}) {
+function ListItemTimeframe({ listItem }) {
   const timeframeLabel = listItem.finishDate
     ? 'Start and finish date'
     : 'Start date'
 
   return (
     <Tooltip label={timeframeLabel}>
-      <div aria-label={timeframeLabel} css={{marginTop: 6}}>
-        <FaRegCalendarAlt css={{marginTop: -2, marginRight: 5}} />
+      <div aria-label={timeframeLabel} css={{ marginTop: 6 }}>
+        <FaRegCalendarAlt css={{ marginTop: -2, marginRight: 5 }} />
         <span>
           {formatDate(listItem.startDate)}{' '}
           {listItem.finishDate ? `— ${formatDate(listItem.finishDate)}` : null}
@@ -101,14 +99,15 @@ function ListItemTimeframe({listItem}) {
   )
 }
 
-function NotesTextarea({listItem, user}) {
-  const [mutate] = useUpdateListItem(user)
-  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 300}), [
-    mutate,
-  ])
+function NotesTextarea({ listItem, user }) {
+  const [mutate, { error, isError }] = useUpdateListItem(user)
+  const debouncedMutate = React.useMemo(
+    () => debounceFn(mutate, { wait: 300 }),
+    [mutate]
+  )
 
   function handleNotesChange(e) {
-    debouncedMutate({id: listItem.id, notes: e.target.value})
+    debouncedMutate({ id: listItem.id, notes: e.target.value })
   }
 
   return (
@@ -121,20 +120,26 @@ function NotesTextarea({listItem, user}) {
             marginRight: 10,
             marginTop: '0',
             marginBottom: '0.5rem',
-            fontWeight: 'bold',
-          }}
-        >
+            fontWeight: 'bold'
+          }}>
           Notes
         </label>
+        {isError && (
+          <ErrorMessage
+            error={error}
+            variant="inline"
+            css={{ marginLeft: 6, fontSize: '0.7em' }}
+          />
+        )}
       </div>
       <Textarea
         id="notes"
         defaultValue={listItem.notes}
         onChange={handleNotesChange}
-        css={{width: '100%', minHeight: 300}}
+        css={{ width: '100%', minHeight: 300 }}
       />
     </React.Fragment>
   )
 }
 
-export {BookScreen}
+export { BookScreen }
